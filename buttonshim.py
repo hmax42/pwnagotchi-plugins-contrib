@@ -17,8 +17,7 @@ except ImportError:
 
 ADDR = 0x3f
 
-#adapted from version 0.0.2
-__version__ = '0.0.2x'
+__version__ = '0.0.3'
 
 _bus = None
 
@@ -415,7 +414,7 @@ def set_pixel(r, g, b):
     _write_byte(0)
     _enqueue()
 
-def blink(r, g, b, ontime, offtime, blinktimes):
+def blinkLed(r, g, b, ontime, offtime, blinktimes):
     logging.info("[buttonshim] Blink")
     for i in range(0, blinktimes):
         set_pixel(r, g, b)
@@ -427,32 +426,32 @@ def runCommand(button, pressed, plugin):
     logging.info(f"[buttonshim] Button Pressed! Loading command from slot '{button}' for button '{NAMES[button]}'")
     bCfg = plugin.options['buttons'][NAMES[button]]
     blinkCfg = bCfg['blink']
-    logging.debug(blink)
+    logging.info(blinkCfg)
     if blinkCfg['enabled'] == True:
-        logging.debug(f"[buttonshim] Blinking led")
+        logging.info(f"[buttonshim] Blinking led")
         red = int(blinkCfg['red'])
         green = int(blinkCfg['green'])
         blue = int(blinkCfg['blue'])
         on_time = float(blinkCfg['on_time'])
         off_time = float(blinkCfg['off_time'])
-        blink_times =  int(blinkCfg['blink_times'])
-        logging.debug(f"red {red} green {green} blue {blue} on_time {on_time} off_time {off_time} blink_times {blink_times}")
-        thread = Thread(target=blink, args=(red, green, blue, on_time, off_time, blink_times))
+        blink_times = int(blinkCfg['blink_times'])
+        logging.info(f"red {red} green {green} blue {blue} on_time {on_time} off_time {off_time} blink_times {blink_times}")
+        thread = Thread(target=blinkLed, args=(red, green, blue, on_time, off_time, blink_times))
         thread.start()
-        logging.debug(f"[buttonshim] Blink thread started")
+        logging.info(f"[buttonshim] Blink thread started")
     command = bCfg['command']
     if command == '':
-        logging.debug(f"[buttonshim] Command empty")
+        logging.info(f"[buttonshim] Command empty")
     else:
-        logging.debug(f"[buttonshim] Process create: {command}")
+        logging.info(f"[buttonshim] Process create: {command}")
         process = subprocess.Popen(command, shell=True, stdin=None, stdout=open("/dev/null", "w"), stderr=None, executable="/bin/bash")
         process.wait()
         process = None
-        logging.debug(f"[buttonshim] Process end")
+        logging.info(f"[buttonshim] Process end")
 
 class Buttonshim(plugins.Plugin):
     __author__ = 'gon@o2online.de'
-    __version__ = '0.0.1'
+    __version__ = '0.0.3'
     __license__ = 'GPL3'
     __description__ = 'Pimoroni Button Shim GPIO Button and RGB LED support plugin based on the pimoroni-buttonshim-lib and the pwnagotchi-gpio-buttons-plugin'
 
